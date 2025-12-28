@@ -413,4 +413,3 @@ template:
         state: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle3_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone16 }}
-
