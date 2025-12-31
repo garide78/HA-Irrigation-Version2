@@ -19,51 +19,113 @@ In order to have the weather outlook displayed you need to provide a sensor call
 
 Here is an example of the Weather Outlook sensor (this is mine and it will **NOT** work for you, it is *just an example*),
 ```
-  - platform: template
-    sensors:
-
+template:
+  - sensor:
       #=== Irrigaton Weather Outlook
-      #=== Creates a two line wether outlook with approprite icon 
-      irrigation_weather_outlook:
-        value_template: >
-          {% set current_conditions = states(states('input_text.weather_sensor_forecast_conditions')) | title%}
+      #=== Creates a two line weather outlook with approprite icon 
+      - name: Irrigation Weather Outlook
+        unique_id: irrigation_weather_outlook
+        state: >
+          {% set current_conditions = states('sensor.weather_current_weather') | title %}
           {% set current_conditions = current_conditions.replace('Partlycloudy', 'Partly Cloudy') %}
 
-          {% set max_high_temp = states(states('input_text.weather_sensor_forecast_high_temperature')) | round(1) %}
-          {% set will_rain_today = states(states('input_text.weather_sensor_will_it_rain_today')) %}
-          {% set will_rain_tomorrow = states(states('input_text.weather_sensor_will_it_rain_tomorrow')) %}
-          {% set total_rain_today = states(states('input_text.weather_sensor_forecast_total_rain_today')) %}
-          {% set total_rain_tomorrow = states(states('input_text.weather_sensor_forecast_total_rain_tomorrow')) %}
-          {% set chance_of_rain_today = states(states('input_text.weather_sensor_forecast_chance_of_rain_today')) %}
-          {% set chance_of_rain_tomorrow = states(states('input_text.weather_sensor_forecast_chance_of_rain_tomorrow')) %}
+          {% set max_high_temp = states('sensor.weather_forecast_high_temperature') %}
+          {% set max_high_temp = max_high_temp if max_high_temp not in ['unknown', 'unavailable', 'none', None, ''] else 'N/A' %}
+          {% set max_high_temp = max_high_temp | round(0) if max_high_temp is number else max_high_temp %}
 
-          {% set rain_today = total_rain_today ~ 'mm / ' ~ chance_of_rain_today ~ '%' %}
-          {% set rain_tomorrow = total_rain_tomorrow ~ 'mm / ' ~ chance_of_rain_tomorrow ~ '%' %}
+          {% set will_rain_today = states('sensor.weather_will_it_rain_today') %}
+          {% set will_rain_tomorrow = states('sensor.weather_will_it_rain_tomorrow') %}
 
-          {% set outlook = 'Outlook: ' ~ current_conditions ~ ', High Temp ' ~ max_high_temp ~ '°C<br>' %}
+          {% set total_rain_today = states('sensor.weather_forecast_total_rain_today') %}
+          {% set total_rain_today = total_rain_today if total_rain_today not in ['unknown', 'unavailable', 'none', None, ''] else '0' %}
 
-          {% if will_rain_today == '1' and will_rain_tomorrow == '1' %}
+          {% set total_rain_tomorrow = states('sensor.weather_forecast_total_rain_tomorrow') %}
+          {% set total_rain_tomorrow = total_rain_tomorrow if total_rain_tomorrow not in ['unknown', 'unavailable', 'none', None, ''] else '0' %}
+
+          {% set probability_of_rain_today = states('sensor.weather_probability_of_rain_today') %}
+          {% set probability_of_rain_today = probability_of_rain_today if probability_of_rain_today not in ['unknown', 'unavailable', 'none', None, ''] else '0' %}
+
+          {% set probability_of_rain_tomorrow = states('sensor.weather_probability_of_rain_tomorrow') %}
+          {% set probability_of_rain_tomorrow = probability_of_rain_tomorrow if probability_of_rain_tomorrow not in ['unknown', 'unavailable', 'none', None, ''] else '0' %}
+
+          {% set rain_today = total_rain_today ~ 'mm / ' ~ probability_of_rain_today ~ '%' %}
+          {% set rain_tomorrow = total_rain_tomorrow ~ 'mm / ' ~ probability_of_rain_tomorrow ~ '%' %}
+
+          {% set outlook = 'Outlook: ' ~ current_conditions ~ ' High Temp ' ~ max_high_temp ~ '°C<br>' %}
+
+          {% set rain_today_bool = will_rain_today in ['1', 'yes', 'true'] %}
+          {% set rain_tomorrow_bool = will_rain_tomorrow in ['1', 'yes', 'true'] %}
+
+          {% if rain_today_bool and rain_tomorrow_bool %}
             {% set outlook = outlook ~ 'Rain Today (' ~ rain_today ~ ') & Tomorrow (' ~ rain_tomorrow ~ ')' %}
-          {% elif will_rain_today == '1' %}
+          {% elif rain_today_bool %}
             {% set outlook = outlook ~ 'Rain Today (' ~ rain_today ~ '), none tomorrow' %}
-          {% elif will_rain_tomorrow == '1' %}
+          {% elif rain_tomorrow_bool %}
             {% set outlook = outlook ~ 'Rain Tomorrow (' ~ rain_tomorrow ~ ')' %}
           {% else %}
             {% set outlook = outlook ~ 'No rain forecast today or tomorrow.' %}
           {% endif %}
 
           {{ outlook }}
-        entity_picture_template: >
+        picture: >
           {% set current = state_attr('sensor.weather_api_current', 'current') %}
-          {% set icon = current.condition.icon %}
-          {% set icon = icon.split('/')[-1] %}
-          {% set icon = icon.split('.')[0] %}
-          {% set is_day = true if states('sensor.elevation') | int > 0 else false %}
-          
+          {% set icon = current.condition.icon.split('/')[-1] if current is defined and current.condition is defined and current.condition.icon is defined else 'unknown.png' %}
+          {% set is_day = true if state_attr('sun.sun', 'elevation') | float > 0 else false %}
           {% if is_day %}
-            {{ '/local/icons/weather_icons/weather_api_day/' ~ icon ~ '.png' }}
+            {{ '/local/icons/weather_icons/weather_api_day/' ~ icon }}
           {% else %}
-            {{ '/local/icons/weather_icons/weather_api_night/' ~ icon ~ '.png' }}
+            {{ '/local/icons/weather_icons/weather_api_night/' ~ icon }}
           {% endif %}
+        availability: >
+          {% set weather_sensors = expand(
+            "sensor.weather_forecast_high_temperature",
+            "sensor.weather_will_it_rain_today",
+            "sensor.weather_will_it_rain_tomorrow",
+            "sensor.weather_forecast_total_rain_today",
+            "sensor.weather_forecast_total_rain_tomorrow",
+            "sensor.weather_probability_of_rain_today",
+            "sensor.weather_probability_of_rain_tomorrow",
+            "sensor.weather_current_weather"
+          ) %}
+          {{ weather_sensors | selectattr('state','in', ['unknown','unavailable']) | list | length == 0 }}
+        attributes:
+          current_conditions: >
+            {{ states('sensor.weather_current_weather') | title }}
+          max_high_temp: >
+            {{ states('sensor.weather_forecast_high_temperature') | round() }}
+          will_rain_today: >
+            {{ states('sensor.weather_will_it_rain_today') }}
+          will_rain_tomorrow: >
+            {{ states('sensor.weather_will_it_rain_tomorrow') }}
+          total_rain_today: >
+            {{ states('sensor.weather_forecast_total_rain_today') }}
+          total_rain_tomorrow: >
+            {{ states('sensor.weather_forecast_total_rain_tomorrow') }}
+          probability_of_rain_today: >
+            {{ states('sensor.weather_probability_of_rain_today') }}
+          probability_of_rain_tomorrow: >
+            {{ states('sensor.weather_probability_of_rain_tomorrow') }}
+          rain_today: >
+            {{ states('sensor.weather_forecast_total_rain_today') ~ 'mm / ' ~ states('sensor.weather_probability_of_rain_today') ~ '%' }}
+          rain_tomorrow: >
+            {{ states('sensor.weather_forecast_total_rain_tomorrow') ~ 'mm / ' ~ states('sensor.weather_probability_of_rain_tomorrow') ~ '%' }}
+
 ```
 
+__Night or Day__
+
+The weather graphs are shaded using this sensor
+
+```
+template:
+  - sensor:
+      - name: Night or Day
+        unique_id: night_or_day
+        state: >
+          {% if is_state('sun.sun', 'above_horizon') %}
+            0
+          {% else %}
+            1
+          {% endif %}
+        icon: mdi:power-sleep
+```
