@@ -150,6 +150,34 @@ input_number:
     max: 60
     unit_of_measurement: min
     icon: mdi:numeric-6-box-outline
+  irrigation_cycle2_zone17_duration: 
+    name: Cycle 2 Zone17 Duration
+    min: 0
+    max: 60
+    unit_of_measurement: min
+    icon: mdi:numeric-7-box-outline
+
+  irrigation_cycle2_zone18_duration: 
+    name: Cycle 2 Zone18 Duration
+    min: 0
+    max: 60
+    unit_of_measurement: min
+    icon: mdi:numeric-8-box-outline
+
+  irrigation_cycle2_zone19_duration: 
+    name: Cycle 2 Zone91 Duration
+    min: 0
+    max: 60
+    unit_of_measurement: min
+    icon: mdi:numeric-9-box-outline
+
+  irrigation_cycle2_zone20_duration: 
+    name: Cycle 2 Zone20 Duration
+    min: 0
+    max: 60
+    unit_of_measurement: min
+    icon: mdi:numeric-10-box-outline
+
 
   #=========================================
   #=== Cycle 2 zone durations (Input Boxes)
@@ -282,6 +310,38 @@ input_number:
     unit_of_measurement: min
     icon: mdi:numeric-6-box-outline
 
+  irrigation_cycle2_zone17_duration_box: 
+    name: Cycle 2 Zone 17 Duration
+    min: 0
+    max: 60
+    mode: box
+    unit_of_measurement: min
+    icon: mdi:numeric-7-box-outline
+
+  irrigation_cycle2_zone18_duration_box: 
+    name: Cycle 2 Zone 18 Duration
+    min: 0
+    max: 60
+    mode: box
+    unit_of_measurement: min
+    icon: mdi:numeric-8-box-outline
+
+  irrigation_cycle2_zone19_duration_box: 
+    name: Cycle 2 Zone 19 Duration
+    min: 0
+    max: 60
+    mode: box
+    unit_of_measurement: min
+    icon: mdi:numeric-9-box-outline
+
+  irrigation_cycle2_zone20_duration_box: 
+    name: Cycle 2 Zone 20 Duration
+    min: 0
+    max: 60
+    mode: box
+    unit_of_measurement: min
+    icon: mdi:numeric-10-box-outline
+
 
   #=============================================
   #=== Cycle 2 Wait For Entity Timeout Duration
@@ -352,7 +412,7 @@ input_boolean:
     icon: mdi:toggle-switch
 
   #================================
-  #=== Cycle 2 Schedule Today Only
+  #=== Cycle 1 Schedule Today Only
   #================================
   irrigation_cycle2_schedule_today_only:
     name: Cycle 2 Schedule Today Only
@@ -394,31 +454,26 @@ input_boolean:
     icon: mdi:clock-check-outline
 
 
-#==============
-#=== Templates
-#==============
-template:
-  - sensor:
+#============
+#=== Sensors
+#============
+sensor:
+  - platform: template
+    sensors:
       #=== Cycle 2 Start Time In Seconds
-      - name: Irrigation Cycle2 Start Time In Seconds
-        unique_id: irrigation_cycle2_start_time_in_seconds
-        state: >
+      irrigation_cycle2_start_time_in_seconds:
+        friendly_name: Cycle 2 Start Time In Seconds
+        value_template: >
           {{ state_attr('input_datetime.irrigation_cycle2_start_time', 'timestamp') }}
         
       #=== Cycle 2 Duration In Seconds
-      - name: Irrigation Cycle2 Duration In Seconds
-        unique_id: irrigation_cycle2_duration_in_seconds
-        state: >
-          {% set max_zones = states('input_number.irrigation_number_of_zones') | int(default=0) %}
-          {% set zone_entities = expand('group.irrigation_group_cycle2_zone_durations') %}
-          {% set durations = zone_entities
-              | map(attribute='state')
-              | map('int', default=0)
-              | list
-              | sort(reverse=true) %}
-          {% set slice_end = max_zones if max_zones <= durations | length else durations | length %}
-          {{ durations[0:slice_end] | sum }}
-        attributes:
+      irrigation_cycle2_duration_in_seconds:
+        friendly_name: Cycle 2 Duration In Seconds
+        value_template: >
+          {% set durations = expand('group.irrigation_group_cycle2_zone_durations') | map(attribute='state') | map('int') | list | sort(reverse=true) %}
+          {% set max = states('input_number.irrigation_number_of_zones') | int %}
+          {{ durations[0:max] | sum }}
+        attribute_templates:
           zone_duration: >
             {% set ns = namespace(attributes = '{') %}
             {% for zone in states.input_number if zone.object_id.startswith('irrigation_cycle2_zone') and
@@ -474,98 +529,122 @@ template:
 
 
       #=== Actual Zone durations in seconds
-      - name: Irrigation Cycle2 Zone1 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone1_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone1_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 1 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone1 }}
 
-      - name: Irrigation Cycle2 Zone2 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone2_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone2_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 2 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone2 }}
 
-      - name: Irrigation Cycle2 Zone3 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone3_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone3_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 3 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone3 }}
 
-      - name: Irrigation Cycle2 Zone4 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone4_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone4_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 4 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone4 }}
 
-      - name: Irrigation Cycle2 Zone5 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone5_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone5_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 5 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone5 }}
 
-      - name: Irrigation Cycle2 Zone6 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone6_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone6_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 6 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone6 }}
 
-      - name: Irrigation Cycle2 Zone7 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone7_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone7_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 7 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone7 }}
 
-      - name: Irrigation Cycle2 Zone8 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone8_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone8_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 8 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone8 }}
 
-      - name: Irrigation Cycle2 Zone9 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone9_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone9_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 9 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone9 }}
           
-      - name: Irrigation Cycle2 Zone10 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone10_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone10_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 10 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone10 }}
           
-      - name: Irrigation Cycle2 Zone11 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone11_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone11_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 11 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone11 }}
           
-      - name: Irrigation Cycle2 Zone12 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone12_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone12_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 12 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone12 }}
           
-      - name: Irrigation Cycle2 Zone13 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone13_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone13_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 13 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone13 }}
           
-      - name: Irrigation Cycle2 Zone14 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone14_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone14_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 14 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone14 }}
           
-      - name: Irrigation Cycle2 Zone15 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone15_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone15_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 15 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone15 }}
           
-      - name: Irrigation Cycle2 Zone16 Actual Duration In Seconds
-        unique_id: irrigation_cycle2_zone16_actual_duration_in_seconds
-        state: >
+      irrigation_cycle2_zone16_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 16 Actual Duration In Seconds
+        value_template: >
           {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
           {{ zone_duration.zone16 }}
+
+      irrigation_cycle2_zone17_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 17 Actual Duration In Seconds
+        value_template: >
+          {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
+          {{ zone_duration.zone17 }}
+
+      irrigation_cycle2_zone18_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 18 Actual Duration In Seconds
+        value_template: >
+          {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
+          {{ zone_duration.zone18 }}
+
+      irrigation_cycle2_zone19_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 19 Actual Duration In Seconds
+        value_template: >
+          {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
+          {{ zone_duration.zone19 }}
+          
+      irrigation_cycle2_zone20_actual_duration_in_seconds:
+        friendly_name: Cycle 2 Zone 20 Actual Duration In Seconds
+        value_template: >
+          {% set zone_duration = state_attr('sensor.irrigation_cycle2_duration_in_seconds', 'zone_duration') %}
+          {{ zone_duration.zone20 }}

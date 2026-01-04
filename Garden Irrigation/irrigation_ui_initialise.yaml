@@ -131,7 +131,7 @@ automation:
 
     action:
       - repeat:
-          count: 16
+          count: 20
           sequence:
             - condition: template
               value_template: >
@@ -160,7 +160,7 @@ automation:
 
     action:
       - repeat:
-          count: 16
+          count: 20
           sequence:
             - condition: template
               value_template: >
