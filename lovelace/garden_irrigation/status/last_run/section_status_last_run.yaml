@@ -185,6 +185,28 @@ entities:
           - item_status_last_run_line.yaml
           - entity: input_text.irrigation_zone16_previous_duration_in_seconds
             zone: zone16
+
+      - !include
+          - item_status_last_run_line.yaml
+          - entity: input_text.irrigation_zone17_previous_duration_in_seconds
+            zone: zone17
+
+      - !include
+          - item_status_last_run_line.yaml
+          - entity: input_text.irrigation_zone18_previous_duration_in_seconds
+            zone: zone18
+
+      - !include
+          - item_status_last_run_line.yaml
+          - entity: input_text.irrigation_zone19_previous_duration_in_seconds
+            zone: zone19
+
+      - !include
+          - item_status_last_run_line.yaml
+          - entity: input_text.irrigation_zone20_previous_duration_in_seconds
+            zone: zone20
+
+
     card_mod:
       style: |
         ha-card {

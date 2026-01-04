@@ -147,6 +147,30 @@ entities:
         - cycle: {{ cycle }}
           zone: 16
 
+      #=== Zone 17
+      - !include
+        - item_cycle_zone_duration_line.yaml
+        - cycle: {{ cycle }}
+          zone: 17
+
+      #=== Zone 18
+      - !include
+        - item_cycle_zone_duration_line.yaml
+        - cycle: {{ cycle }}
+          zone: 18
+
+      #=== Zone 19
+      - !include
+        - item_cycle_zone_duration_line.yaml
+        - cycle: {{ cycle }}
+          zone: 19
+
+      #=== Zone 20
+      - !include
+        - item_cycle_zone_duration_line.yaml
+        - cycle: {{ cycle }}
+          zone: 20
+
 card_mod:
   style: >
     ha-card {

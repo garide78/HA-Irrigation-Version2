@@ -226,6 +226,54 @@ entities:
       - entity: timer.irrigation_zone16_timer
         zone: zone16
 
+  #=== Zone 17
+  - type: custom:hui-element
+    card_type: conditional
+    conditions:
+      - entity: timer.irrigation_zone17_timer
+        state: "active"
+    card:
+      !include
+      - item_status_current_activity_line.yaml
+      - entity: timer.irrigation_zone17_timer
+        zone: zone17
+
+  #=== Zone 18
+  - type: custom:hui-element
+    card_type: conditional
+    conditions:
+      - entity: timer.irrigation_zone18_timer
+        state: "active"
+    card:
+      !include
+      - item_status_current_activity_line.yaml
+      - entity: timer.irrigation_zone18_timer
+        zone: zone18
+
+  #=== Zone 19
+  - type: custom:hui-element
+    card_type: conditional
+    conditions:
+      - entity: timer.irrigation_zone19_timer
+        state: "active"
+    card:
+      !include
+      - item_status_current_activity_line.yaml
+      - entity: timer.irrigation_zone19_timer
+        zone: zone19
+
+  #=== Zone 20
+  - type: custom:hui-element
+    card_type: conditional
+    conditions:
+      - entity: timer.irrigation_zone20_timer
+        state: "active"
+    card:
+      !include
+      - item_status_current_activity_line.yaml
+      - entity: timer.irrigation_zone20_timer
+        zone: zone20
+
 card_mod:
   style: >
     ha-card {

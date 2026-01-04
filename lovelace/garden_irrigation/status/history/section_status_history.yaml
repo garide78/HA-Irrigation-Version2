@@ -10,7 +10,7 @@ entities:
   - !include
     - ../item_status_include_section_check_box.yaml
     - entity: input_boolean.irrigation_ui_show_status_history
-      name: HISTORY TOTALS (approx<br>due to history sensor)
+      name: HISTORY TOTALS
 
   #=== HISTORY COLUMN HEADINGS
   - type: custom:hui-element
@@ -110,6 +110,21 @@ entities:
           - item_status_history_line.yaml
           - zone: zone16
 
+      - !include
+          - item_status_history_line.yaml
+          - zone: zone17
+
+      - !include
+          - item_status_history_line.yaml
+          - zone: zone18
+
+      - !include
+          - item_status_history_line.yaml
+          - zone: zone19
+
+      - !include
+          - item_status_history_line.yaml
+          - zone: zone20
     card_mod:
       style: |
         ha-card {
