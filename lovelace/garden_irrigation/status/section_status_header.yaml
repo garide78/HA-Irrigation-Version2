@@ -182,14 +182,6 @@ entities:
                   return 'zone15';
                 else if (states['timer.irrigation_zone16_timer'].state == 'active')
                   return 'zone16';
-                else if (states['timer.irrigation_zone17_timer'].state == 'active')
-                  return 'zone17';
-                else if (states['timer.irrigation_zone18_timer'].state == 'active')
-                  return 'zone18';
-                else if (states['timer.irrigation_zone19_timer'].state == 'active')
-                  return 'zone19';
-                else if (states['timer.irrigation_zone20_timer'].state == 'active')
-                  return 'zone20';                  
                 else
                   return 'none';
               ]]]
