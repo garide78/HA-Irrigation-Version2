@@ -60,11 +60,6 @@ script:
             - input_number.irrigation_cycle3_zone14_duration
             - input_number.irrigation_cycle3_zone15_duration
             - input_number.irrigation_cycle3_zone16_duration
-            - input_number.irrigation_cycle3_zone17_duration
-            - input_number.irrigation_cycle3_zone18_duration
-            - input_number.irrigation_cycle3_zone19_duration
-            - input_number.irrigation_cycle3_zone20_duration
-
 
       #=== Disable schedules for Cycles 1 and 2
       - service: input_boolean.turn_off
@@ -97,6 +92,8 @@ script:
           log_event: SINGLE_ZONE_STARTING
           zone: >
             {{ zone }}
+          event_time: >
+            {{ now() }}
 
       #=== Start Cycle 3
       - service: input_boolean.turn_on
